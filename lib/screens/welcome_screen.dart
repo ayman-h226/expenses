@@ -1,4 +1,3 @@
-// screens/welcome_screen.dart
 
 import 'package:flutter/material.dart';
 
@@ -17,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset('assets/welcome.jpg',
-                      height: 300, // Ajustez la hauteur en fonction de vos besoins
+                      height: 300,
                       fit: BoxFit.cover,),
                     Text(
                       'Bienvenue dans l\'application de gestion de budget',
