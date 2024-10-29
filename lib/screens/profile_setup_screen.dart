@@ -1,5 +1,3 @@
-// screens/profile_setup_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -26,23 +24,43 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     }
   }
 
+  // Fonction pour vérifier l'unicité de l'email
+  Future<bool> _emailExists(String email) async {
+    final utilisateurs = await DatabaseService().fetchUtilisateurs();
+    return utilisateurs.any((user) => user.email == email);
+  }
+
   // Fonction pour sauvegarder le profil
   Future<void> _saveProfile() async {
     if (_nameController.text.isEmpty || _emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Veuillez remplir tous les champs.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Veuillez remplir tous les champs.')),
+      );
       return;
     }
 
+    // Vérifier l'unicité de l'email
+    bool emailExists = await _emailExists(_emailController.text);
+    if (emailExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Un utilisateur avec cet email existe déjà.')),
+      );
+      return;
+    }
+
+    // Enregistrer le nouvel utilisateur
     final utilisateur = Utilisateur(
       nom: _nameController.text,
       email: _emailController.text,
       dateCreation: DateTime.now().toString(),
+      photoPath: _profileImage?.path, // Sauvegarder le chemin de la photo si elle existe
+
     );
 
     await DatabaseService().insertUtilisateur(utilisateur);
 
-    // Naviguer vers la page principale après l'enregistrement
-    Navigator.pushReplacementNamed(context, '/home');
+    // Redirection vers la page principale après l'enregistrement
+    Navigator.pushReplacementNamed(context, '/portefeuilles');
   }
 
   @override

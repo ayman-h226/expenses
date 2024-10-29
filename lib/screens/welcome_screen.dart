@@ -16,6 +16,9 @@ class WelcomeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Image.asset('assets/welcome.jpg',
+                      height: 300, // Ajustez la hauteur en fonction de vos besoins
+                      fit: BoxFit.cover,),
                     Text(
                       'Bienvenue dans l\'application de gestion de budget',
                       style: TextStyle(

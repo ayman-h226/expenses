@@ -4,12 +4,12 @@ import 'categorie.dart';
 
 class BudgetTransaction {
   final int? id;
-  final int portefeuilleId;  // ID du portefeuille auquel cette transaction est associée
-  final Categorie categorie; // Enum pour la catégorie de la transaction
+  final int portefeuilleId;
+  final Categorie categorie;
   final double montant;
   final String description;
   final DateTime date;
-  final String type;  // "dépense" ou "revenu"
+  final String type;
 
   BudgetTransaction({
     this.id,

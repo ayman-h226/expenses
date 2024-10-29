@@ -1,6 +1,6 @@
-// screens/edit_profile_screen.dart
-
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:provider/provider.dart';
 import '../models/utilisateur.dart';
 import '../state/utilisateur_provider.dart';
@@ -17,12 +17,25 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
+  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.utilisateur.nom);
     _emailController = TextEditingController(text: widget.utilisateur.email);
+    if (widget.utilisateur.photoPath != null) {
+      _profileImage = File(widget.utilisateur.photoPath!);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      setState(() {
+        _profileImage = File(pickedImage.path);
+      });
+    }
   }
 
   @override
@@ -35,6 +48,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null ? Icon(Icons.camera_alt, size: 50) : null,
+              ),
+            ),
+            SizedBox(height: 16),
             _buildTextField(_nameController, 'Nom'),
             SizedBox(height: 16),
             _buildTextField(_emailController, 'Email'),
@@ -42,10 +64,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ElevatedButton(
               onPressed: _updateProfile,
               child: Text('Enregistrer les modifications'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-              ),
             ),
           ],
         ),
@@ -79,6 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       nom: newName,
       email: newEmail,
       dateCreation: widget.utilisateur.dateCreation,
+      photoPath: _profileImage?.path, // Sauvegarder la nouvelle photo de profil si disponible
     );
 
     Provider.of<UtilisateurProvider>(context, listen: false).updateUtilisateur(updatedUser);

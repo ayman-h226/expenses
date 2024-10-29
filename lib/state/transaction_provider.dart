@@ -10,16 +10,21 @@ class TransactionProvider extends ChangeNotifier {
   List<BudgetTransaction> get transactions => _transactions;
 
   Future<void> loadTransactions(int portefeuilleId) async {
-    // Charger uniquement les transactions pour le portefeuille spécifié
+    print('Chargement des transactions pour le portefeuille ID: $portefeuilleId');
     final db = await DatabaseService().database;
     final result = await db.query(
       'transactions',
       where: 'portefeuilleId = ?',
       whereArgs: [portefeuilleId],
     );
+    print('${result.length} transactions trouvées pour le portefeuille $portefeuilleId');
+
     _transactions = result.map((map) => BudgetTransaction.fromMap(map)).toList();
+    print('Transactions récupérées : $_transactions');
+
     notifyListeners();
   }
+
 
   // Ajouter une transaction
   Future<void> addTransaction(BudgetTransaction transaction) async {

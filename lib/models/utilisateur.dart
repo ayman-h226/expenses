@@ -1,35 +1,37 @@
-// models/utilisateur.dart
-
 class Utilisateur {
-  final int? id;
+  int? id; // L'ID de l'utilisateur, null pour les nouveaux utilisateurs
   final String nom;
   final String email;
-  final String? dateCreation;
+  final String dateCreation;
+  final String? photoPath; // Le chemin de la photo de profil
 
   Utilisateur({
-    this.id,
+    this.id, // ID facultatif, il sera généré automatiquement lors de l'insertion
     required this.nom,
     required this.email,
-    this.dateCreation,
+    required this.dateCreation,
+    this.photoPath,
   });
 
-  // Convertir l'utilisateur en map (pour l'insertion en base de données)
+  // Conversion de l'objet en Map pour l'enregistrement en BDD
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'nom': nom,
       'email': email,
       'dateCreation': dateCreation,
+      'photoPath': photoPath,
     };
   }
 
-  // Récupérer un utilisateur à partir d'un map (lors de la lecture depuis la base de données)
+  // Création d'un objet Utilisateur depuis un Map (reçu depuis la BDD)
   static Utilisateur fromMap(Map<String, dynamic> map) {
     return Utilisateur(
-      id: map['id'],
+      id: map['id'], // On récupère l'ID ici
       nom: map['nom'],
       email: map['email'],
       dateCreation: map['dateCreation'],
+      photoPath: map['photoPath'],
     );
   }
 }

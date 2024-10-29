@@ -31,9 +31,9 @@ class SettingsScreen extends StatelessWidget {
       builder: (context, notificationProvider, child) {
         return SwitchListTile(
           title: Text('Activer les notifications'),
-          value: notificationProvider?.notificationsEnabled ?? false,  // Ajout de l'opérateur null-aware
+          value: notificationProvider.notificationsEnabled ?? false,  // Ajout de l'opérateur null-aware
           onChanged: (value) {
-            notificationProvider?.setNotificationsEnabled(value);
+            notificationProvider.setNotificationsEnabled(value);
           },
         );
       },

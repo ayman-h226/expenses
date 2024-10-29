@@ -1,18 +1,20 @@
 // models/portefeuille.dart
 
 class Portefeuille {
-  final int? id;
-  final String name;
-  final double initialBalance;
-  final String description;
-  final DateTime dateCreation;
+  int? id;
+  String name;
+  double initialBalance;
+  String? description;
+  DateTime dateCreation;
+  double soldeActuel; // Nouveau champ pour le solde actuel
 
   Portefeuille({
     this.id,
     required this.name,
     required this.initialBalance,
-    required this.description,
+    this.description,
     required this.dateCreation,
+    this.soldeActuel = 0.0, // Initialiser le solde actuel à la création
   });
 
   Map<String, dynamic> toMap() {
@@ -25,13 +27,14 @@ class Portefeuille {
     };
   }
 
-  static Portefeuille fromMap(Map<String, dynamic> map) {
+  factory Portefeuille.fromMap(Map<String, dynamic> map) {
     return Portefeuille(
       id: map['id'],
       name: map['name'],
       initialBalance: map['initialBalance'],
       description: map['description'],
       dateCreation: DateTime.parse(map['dateCreation']),
+      soldeActuel: map.containsKey('soldeActuel') ? map['soldeActuel'] : 0.0, // Charger le solde actuel si présent
     );
   }
 }

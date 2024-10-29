@@ -1,10 +1,9 @@
-// screens/add_transaction_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/budget_transaction.dart';
 import '../models/categorie.dart';
 import '../state/transaction_provider.dart';
+import '../state/portefeuille_provider.dart'; // Importez PortefeuilleProvider pour notifier le changement
 
 class AddTransactionScreen extends StatefulWidget {
   final int portefeuilleId;
@@ -182,7 +181,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       type: _transactionType,
     );
 
+    // Ajout de la transaction dans TransactionProvider
     await Provider.of<TransactionProvider>(context, listen: false).addTransaction(newTransaction);
+
+    // Mise à jour du solde du portefeuille dans PortefeuilleProvider
+    await Provider.of<PortefeuilleProvider>(context, listen: false).updateSoldeCourant(widget.portefeuilleId);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Transaction ajoutée avec succès !')),

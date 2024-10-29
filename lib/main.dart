@@ -29,6 +29,12 @@ void main() async {
 
   runApp(MyApp());
 }
+// Méthode pour vérifier s'il existe un utilisateur enregistré
+Future<bool> _checkUserExists() async {
+  final utilisateurs = await DatabaseService().fetchUtilisateurs(); // Appelle la méthode dans DatabaseService
+  return utilisateurs.isNotEmpty; // Si la liste n'est pas vide, un utilisateur existe
+}
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -36,7 +42,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
-        ChangeNotifierProvider(create: (_) => PortefeuilleProvider()),
+        ChangeNotifierProvider(create: (_) => PortefeuilleProvider()..loadPortefeuilles()),
         ChangeNotifierProvider(create: (_) => UtilisateurProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()..loadNotificationSettings()),
       ],
@@ -46,17 +52,13 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => FutureBuilder(
-            future: _checkFirstLaunch(),
+            future:  _checkUserExists(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
               } else {
-                bool isFirstLaunch = snapshot.data ?? true;
-                // Définir que l'application a été lancée pour la première fois
-                if (isFirstLaunch) {
-                  DatabaseService().setFirstLaunch(false);
-                }
-                return isFirstLaunch ? WelcomeScreen() : PortefeuilleScreen(); // Portefeuille comme accueil
+                bool userExists = snapshot.data ?? true;
+                return userExists ? PortefeuilleScreen() : WelcomeScreen();
               }
             },
           ),

@@ -5,7 +5,6 @@ import 'package:sqflite/sqflite.dart';
 import '../models/budget_transaction.dart';
 import '../models/portefeuille.dart';
 import '../models/utilisateur.dart';
-import '../models/categorie.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -50,7 +49,7 @@ class DatabaseService {
             date TEXT,
             type TEXT,
             portefeuilleId INTEGER,
-            FOREIGN KEY (portefeuilleId) REFERENCES portefeuilles(id)
+            FOREIGN KEY (portefeuilleId) REFERENCES portefeuilles(id) ON DELETE CASCADE
           );
         ''');
 
@@ -60,7 +59,8 @@ class DatabaseService {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nom TEXT,
             email TEXT,
-            dateCreation TEXT
+            dateCreation TEXT,
+            photoPath TEXT
           );
         ''');
 
@@ -76,26 +76,40 @@ class DatabaseService {
     );
   }
 
+
   // -----------------------------------------------------------
   // Gestion des portefeuilles
   // -----------------------------------------------------------
 
   Future<void> insertPortefeuille(Portefeuille portefeuille) async {
     final db = await database;
-    await db.insert(
+    int id =await db.insert(
       'portefeuilles',
       portefeuille.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    portefeuille.id = id;
+    print('Portefeuille inséré avec ID: $id');
+
+
   }
 
+// Dans database_service.dart
   Future<List<Portefeuille>> fetchPortefeuilles() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('portefeuilles');
+
     return List.generate(maps.length, (i) {
-      return Portefeuille.fromMap(maps[i]);
+      return Portefeuille(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        initialBalance: maps[i]['initialBalance'],
+        description: maps[i]['description'],
+        dateCreation: DateTime.parse(maps[i]['dateCreation']),
+      );
     });
   }
+
 
   Future<void> updatePortefeuille(Portefeuille portefeuille) async {
     final db = await database;
@@ -136,6 +150,7 @@ class DatabaseService {
       where: 'portefeuilleId = ?',
       whereArgs: [portefeuilleId],
     );
+    print('${maps.length} transactions trouvées pour le portefeuille $portefeuilleId');
     return List.generate(maps.length, (i) {
       return BudgetTransaction.fromMap(maps[i]);
     });
@@ -307,5 +322,7 @@ class DatabaseService {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+
 
 }
